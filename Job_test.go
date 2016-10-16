@@ -42,8 +42,8 @@ func TestJobStart(t *testing.T)  {
 		t.Error("Workers are not working properly");
 	}
 	mutex.Unlock();
-	tmp := job.WorkerQueue.head;
 	job.WorkerQueue.mutex.RLock();
+	tmp := job.WorkerQueue.head;
 	doneTaskCount := 0;
 	for tmp != nil {
 		worker,ok := tmp.value.(*Worker);
