@@ -10,7 +10,7 @@ type TestData struct {
 }
 
 func (testData * TestData)  Job(){
-	fmt.Printf("Job value is %d\n",testData.Value);
+	//fmt.Printf("Job value is %d\n",testData.Value);
 }
 func NewTestData(value int) *TestData  {
 	return &TestData{Value:value};

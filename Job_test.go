@@ -24,6 +24,7 @@ func NewTestJobData(value int) *TestJobData  {
 
 
 func TestJobStart(t *testing.T)  {
+
 	totalValueCount:= 0;
 	job := NewJob("newtest",3);
 
@@ -35,12 +36,14 @@ func TestJobStart(t *testing.T)  {
 		job.NewTask(NewTestJobData(i));
 	}
 	job.Start();
-	time.Sleep(time.Second * 3)
-
+	time.Sleep(time.Second * 1)
+	mutex.Lock();
 	if counter != totalValueCount {
 		t.Error("Workers are not working properly");
 	}
+	mutex.Unlock();
 	tmp := job.WorkerQueue.head;
+	job.WorkerQueue.mutex.RLock();
 	doneTaskCount := 0;
 	for tmp != nil {
 		worker,ok := tmp.value.(*Worker);
@@ -51,6 +54,7 @@ func TestJobStart(t *testing.T)  {
 		}
 		tmp = tmp.next;
 	}
+	job.WorkerQueue.mutex.RUnlock();
 	if doneTaskCount != 10 {
 		t.Error("All task Are not done!");
 	}
@@ -58,4 +62,5 @@ func TestJobStart(t *testing.T)  {
 	if !job.shouldStop.getBoolValue() {
 		t.Error("Should be false");
 	}
+	time.Sleep(time.Second * 1)
 }
