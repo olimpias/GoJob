@@ -21,7 +21,7 @@ func TestQueueEnQueue(t *testing.T) {
 		t.Error("Enqeue not working");
 	}
 	queue.EnQueue(value2);
-	if queue.head.value != value2 {
+	if queue.tail.value != value2 {
 		t.Error("Enqeue not working");
 	}
 }
@@ -55,8 +55,14 @@ func TestQueueDeQueue(t *testing.T) {
 	if value2 != value22 {
 		t.Error("Dequeu is not matching with second enqueued value");
 	}
+	if !queue.IsEmpty() {
+		t.Error("Queue should be empty");
+	}
 	value33 := queue.DeQueue();
 	if value33 != nil {
 		t.Error("Dequeue is third value must be nil");
+	}
+	if !queue.IsEmpty() {
+		t.Error("Queue should be empty");
 	}
 }
