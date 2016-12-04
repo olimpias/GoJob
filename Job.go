@@ -16,6 +16,7 @@ type Job struct {
 	Name string;
 	mutexWorkers sync.Mutex;
 	shouldStop AtomicBool;
+	isTaskRunning AtomicBool;
 }
 
 
@@ -36,6 +37,7 @@ Starts worker to do their given task. If there is no task goroutine will be in i
 
  */
 func (job *Job) Start()  {
+	job.isTaskRunning.setBoolValue(true);
 	job.shouldStop.setBoolValue(false);
 	go func() {
 		for  {
@@ -45,6 +47,7 @@ func (job *Job) Start()  {
 				break;
 			}
 		}
+		job.isTaskRunning.setBoolValue(false);
 	}();
 }
 
