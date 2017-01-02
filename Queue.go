@@ -69,6 +69,12 @@ func (queue * Queue) DeQueue() interface{}  {
 	}
 }
 
+func (queue * Queue) Clear(){
+	for !queue.IsEmpty() {
+		queue.DeQueue();
+	}
+}
+
 
 
 

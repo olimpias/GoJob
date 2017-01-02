@@ -66,3 +66,15 @@ func TestQueueDeQueue(t *testing.T) {
 		t.Error("Queue should be empty");
 	}
 }
+
+func TestQueueClear(t *testing.T)  {
+	queue := NewQueue();
+	value1 := 10;
+	value2 := 20;
+	queue.EnQueue(value1);
+	queue.EnQueue(value2);
+	queue.Clear();
+	if !queue.IsEmpty() {
+		t.Error("Queue should be empty");
+	}
+}

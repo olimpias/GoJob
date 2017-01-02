@@ -26,9 +26,12 @@ var once sync.Once;
 //Error
 var JobIsAlreadyStarted = errors.New("Job is already started");
 var JobNameDoesNotExist = errors.New("Job name does not exist");
+var TaskIdDoesNotExist = errors.New("Task Id does not exist");
+
+var IdNotFound = -1;
 
 /**
-JobManager is exists in once. It should be called with this method.
+JobManager is once existed . It should be called with this method everytime.
  */
 func SingletonJobManager() *JobManager  {
 	once.Do(func() {
@@ -38,22 +41,22 @@ func SingletonJobManager() *JobManager  {
 }
 
 /**
-New job added with given string and worker count value.
+New job added with given string and worker count.
  */
-func (jobManager * JobManager) NewJob(Name string,WorkerCount int)  {
+func (jobManager * JobManager) NewJob(jobName string,workerCount int)  {
 	jobManager.mutex.Lock();
 	defer jobManager.mutex.Unlock();
-	job := NewJob(Name,WorkerCount);
-	jobManager.jobMap[Name] = job;
+	job := NewJob(jobName,workerCount);
+	jobManager.jobMap[jobName] = job;
 }
 
 /**
 if you already added input string, job pointer will be received with given string. If you don't it will return nil.
  */
-func (jobManager * JobManager) GetJob(Name string) *Job  {
+func (jobManager * JobManager) GetJob(jobName string) *Job  {
 	jobManager.mutex.RLock();
 	defer jobManager.mutex.RUnlock();
-	return jobManager.jobMap[Name];
+	return jobManager.jobMap[jobName];
 }
 
 /**
@@ -61,47 +64,78 @@ addTask allows you to add new task to given job name. The task will be assigned 
  WorkerInterface must be implemented for input @{task}
  If job name does not exist, it returns @{JobNameDoesNotExist} error
  */
-func (jobManager * JobManager) AddTask(Name string,task WorkerInterface) error  {
+func (jobManager * JobManager) AddTask(jobName string,executor Executor) (int,error)  {
 	jobManager.mutex.RLock();
 	defer jobManager.mutex.RUnlock();
-	job := jobManager.jobMap[Name];
+	task := NewTask(executor);
+	job := jobManager.jobMap[jobName];
 	if job != nil{
-		 job.NewTask(task);
-		return nil;
+		 job.NewTask(task)
+		return task.Id,nil;
 	}
-	return JobNameDoesNotExist;
+	return IdNotFound,JobNameDoesNotExist;
 }
 
 /**
 Starts job with given name. If job name does not exist it returns @{JobNameDoesNotExist} error.
 If job is already started, it returns @{JobIsAlreadyStarted} error
  */
-func (jobManager * JobManager) StartTasks(Name string) error {
+func (jobManager * JobManager) StartTasks(jobName string) error {
 	jobManager.mutex.RLock();
 	defer jobManager.mutex.RUnlock();
-	if jobManager.jobMap[Name] != nil {
-		if jobManager.jobMap[Name].isTaskRunning.getBoolValue() {
+	if jobManager.jobMap[jobName] != nil {
+		if jobManager.jobMap[jobName].areTasksRunning.getBoolValue() {
 			return JobIsAlreadyStarted;
 		}
-		jobManager.jobMap[Name].Start();
+		jobManager.jobMap[jobName].Start();
 		return nil;
 	}
 	return JobNameDoesNotExist;
 }
 
 /**
-TODO users should able to stop running tasks!
-Stops tasks with given job name however if task is already in running progress, it can not be stopped. If it is already stopped, nothing is going to be happen.
+Stops running jobs with given job name however if task is already in running progress, it can not be stopped. If it is already stopped, nothing is going to be happen.
 If job name does not exist, it returns @{JobNameDoesNotExist} error.
  */
-func (jobManager * JobManager) StopTasks(Name string) error {
+func (jobManager * JobManager) StopRunningTasks(jobName string) error {
 	jobManager.mutex.RLock();
 	defer jobManager.mutex.RUnlock();
-	if jobManager.jobMap[Name] != nil {
-		jobManager.jobMap[Name].Stop();
+	if jobManager.jobMap[jobName] != nil {
+		jobManager.jobMap[jobName].Stop()
 		return nil;
 	}
 	return JobNameDoesNotExist;
-
 }
+
+/**
+
+ */
+func (jobManager * JobManager) CancelAllTasks(jobName string) error {
+	jobManager.mutex.RLock();
+	defer jobManager.mutex.RUnlock();
+	if jobManager.jobMap[jobName] != nil {
+		jobManager.jobMap[jobName].CancelAllTasks()
+		return nil;
+	}
+	return JobNameDoesNotExist;
+}
+
+/**
+
+ */
+func (jobManager * JobManager) CancelTask(taskId int,jobName string) error {
+	jobManager.mutex.RLock();
+	defer jobManager.mutex.RUnlock();
+	if jobManager.jobMap[jobName] != nil {
+		if jobManager.jobMap[jobName].IsTaskExistWithSync(taskId) {
+			jobManager.jobMap[jobName].CancelTaskWith(taskId);
+			return nil;
+		}
+		return TaskIdDoesNotExist;
+	}
+	return JobNameDoesNotExist;
+}
+
+
+
 

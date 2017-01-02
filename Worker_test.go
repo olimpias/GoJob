@@ -5,30 +5,21 @@ import (
 	"fmt"
 )
 
-type TestData struct {
-	Value int;
-}
-
-func (testData * TestData)  Job(){
-	//fmt.Printf("Job value is %d\n",testData.Value);
-}
-func NewTestData(value int) *TestData  {
-	return &TestData{Value:value};
-}
-
 func TestNewWorker(t *testing.T) {
-	testData := NewTestData(10);
+	testData := NewTestJobData(10);
+	task := NewTask(testData);
 	workerChannel := make(chan *Worker,1);
-	worker := NewWorker(testData,10,workerChannel);
-	if worker.Id != 10 || worker.workerChannel != workerChannel || worker.Task != testData {
+	worker := NewWorker(task,10,workerChannel);
+	if worker.Id != 10 || worker.workerChannel != workerChannel || worker.Task.executor != testData {
 		t.Error("NewWorker couldn't be created properly");
 	}
 }
 
 func TestWorkerStartWorking(t *testing.T) {
-	testData := NewTestData(10);
+	testData := NewTestJobData(10);
+	task := NewTask(testData);
 	workerChannel := make(chan *Worker,1);
-	worker := NewWorker(testData,10,workerChannel);
+	worker := NewWorker(task,10,workerChannel);
 	worker.StartWorking();
 	tmpWorker := <-workerChannel;
 	if tmpWorker != worker {
@@ -37,9 +28,10 @@ func TestWorkerStartWorking(t *testing.T) {
 }
 
 func TestWorkerString(t *testing.T) {
-	testData := NewTestData(10);
+	testData := NewTestJobData(10);
+	task := NewTask(testData);
 	workerChannel := make(chan *Worker,1);
-	worker := NewWorker(testData,10,workerChannel);
+	worker := NewWorker(task,10,workerChannel);
 	worker.StartWorking();
 	tmpWorker := <-workerChannel;
 	if tmpWorker.String() != fmt.Sprintf(workerStringInterfaceMessage,worker.Id,worker.Task,worker.doneTaskCount) {
