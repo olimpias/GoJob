@@ -18,7 +18,8 @@ type Worker struct {
 	workerChannel chan *Worker;
 }
 
-var workerStringInterfaceMessage string = "Worker Id:%d, Task Mem Address:%v, Total DONE TASK:%d";
+var workerStringInterfaceMessage string = "Worker Id:%d, Task Mem Address:%p Task Id:%d, Total DONE TASK:%d";
+var taskRunStatusMessage = "Task id:%d is %s";
 
 /**
 Creates New worker with task, id and workerChannel
@@ -35,7 +36,10 @@ func (worker * Worker) StartWorking() {
 	task := worker.Task;
 	if task != nil {
 		go func() {
+			logger.Debug(worker.String());
+			logger.Infof(taskRunStatusMessage,worker.Task.Id,"starting");
 			worker.Task.executor.Job(task);
+			logger.Infof(taskRunStatusMessage,worker.Task.Id,"ended");
 			worker.doneTaskCount++;
 			worker.Task = nil;
 			worker.workerChannel <- worker;
@@ -47,5 +51,5 @@ func (worker * Worker) StartWorking() {
 Returns current task pointer, Worker id and done Task Count values
  */
 func (worker * Worker) String() string  {
-	return fmt.Sprintf(workerStringInterfaceMessage,worker.Id,worker.Task,worker.doneTaskCount);
+	return fmt.Sprintf(workerStringInterfaceMessage,worker.Id,worker.Task.executor,worker.Task.Id,worker.doneTaskCount);
 }

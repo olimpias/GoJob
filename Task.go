@@ -1,6 +1,8 @@
 package GoJob
 
-import "sync"
+import (
+	"sync"
+)
 
 /**
 Executor is an interface which hosts @{Job} method. Job methods allows user to run their codes on different goroutines concurrently.
@@ -33,6 +35,8 @@ type Task struct {
 
 var IdCounter = 0;
 var counterMutex sync.Mutex;
+
+var taskCreationInfoMessage = "Task is created with %d id. Executor mem: %p ";
 /**
 Creates New Task pointer struct with given @{executor}. New struct will be assigned with unique Id.
  */
@@ -41,6 +45,7 @@ func NewTask(executor Executor) *Task  {
 	defer counterMutex.Unlock();
 	task := &Task{Id:IdCounter,executor:executor,cancelled:NewAtomicBool()};
 	IdCounter++;
+	logger.Infof(taskCreationInfoMessage,task.Id,executor);
 	return task;
 }
 /**

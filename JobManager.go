@@ -129,11 +129,30 @@ func (jobManager * JobManager) CancelTask(taskId int,jobName string) error {
 	if jobManager.jobMap[jobName] != nil {
 		if jobManager.jobMap[jobName].IsTaskExistWithSync(taskId) {
 			jobManager.jobMap[jobName].CancelTaskWith(taskId);
+			logger.Debugf("Task with id is cancelled succesfully",taskId);
 			return nil;
 		}
 		return TaskIdDoesNotExist;
 	}
 	return JobNameDoesNotExist;
+}
+
+func (jobManager * JobManager)  DebugConfiguration(isActive bool) {
+	logger.DEBUG_ENABLED = isActive;
+}
+
+func (jobManager * JobManager) InfoConfiguration(isActive bool)  {
+	logger.INFORMATION_ENABLED = isActive;
+}
+
+func (jobManager * JobManager) DisableLogging() {
+	logger.INFORMATION_ENABLED = false;
+	logger.DEBUG_ENABLED = false;
+}
+
+func (jobManager * JobManager) ActivateLogging() {
+	logger.DEBUG_ENABLED = true;
+	logger.INFORMATION_ENABLED = true;
 }
 
 

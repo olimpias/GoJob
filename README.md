@@ -85,6 +85,5 @@ By using taskID, you can cancel task.
 
 ## TODO
 
-Debug Logging<br>
 Priority Queue Structure Implementation for GoJob<br>
 Complex Example by using GoJob<br>

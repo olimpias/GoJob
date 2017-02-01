@@ -21,6 +21,7 @@ type Job struct {
 	TaskMapMutex sync.RWMutex;
 }
 
+var descriptionForAddingTaskMessage = "%d task is added to %s job.";
 
 /**
 It creates new Job. @{Name} should be unique and it distinguish from other key pairs. @{WorkerCount} determines number of workers.
@@ -93,6 +94,7 @@ New Task adds task to queue. It will enqueue and added to task map the given @{t
 func (job * Job) NewTask(task *Task)  {
 	job.addTaskToMap(task);
 	job.TaskQueue.EnQueue(task);
+	logger.Infof(descriptionForAddingTaskMessage,task.Id,job.Name);
 }
 
 /**

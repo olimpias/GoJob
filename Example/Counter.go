@@ -35,9 +35,10 @@ func (counter *Counter) print() {
 	fmt.Println("Value is ", counter.atomicValue)
 }
 
-var goJobManager = GoJob.SingletonJobManager()
+
 
 func main() {
+	var goJobManager = GoJob.SingletonJobManager()
 	newCounterPtr := newCounter()
 	jobName := "incrementNumber"
 	//Creates new job with given job name and allows 4 workers to run concurrently
