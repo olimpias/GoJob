@@ -1,10 +1,10 @@
 package main
 
 import (
-	"GoJob"
 	"fmt"
 	"sync/atomic"
 	"time"
+	"github.com/olimpias/GoJob"
 )
 
 type Counter struct {
