@@ -34,7 +34,8 @@ func TestWorkerString(t *testing.T) {
 	worker := NewWorker(task,10,workerChannel);
 	worker.StartWorking();
 	tmpWorker := <-workerChannel;
-	if tmpWorker.String() != fmt.Sprintf(workerStringInterfaceMessage,worker.Id,worker.Task,worker.doneTaskCount) {
-		t.Error("String implemented in correctly");
+	if tmpWorker.String() != fmt.Sprintf(workerStringInterfaceMessage,worker.Id,worker.doneTaskCount) {
+		t.Error("String implemented incorrectly");
 	}
+
 }

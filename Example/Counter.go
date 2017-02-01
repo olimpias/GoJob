@@ -41,6 +41,8 @@ func main() {
 	var goJobManager = GoJob.SingletonJobManager()
 	newCounterPtr := newCounter()
 	jobName := "incrementNumber"
+	goJobManager.DebugConfiguration(false);
+	goJobManager.InfoConfiguration(false);
 	//Creates new job with given job name and allows 4 workers to run concurrently
 	goJobManager.NewJob(jobName, 5)
 	//I want to increment 100 times so I need to add 100 times...

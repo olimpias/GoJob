@@ -18,8 +18,8 @@ type Worker struct {
 	workerChannel chan *Worker;
 }
 
-var workerStringInterfaceMessage string = "Worker Id:%d, Task Mem Address:%p Task Id:%d, Total DONE TASK:%d";
-var taskRunStatusMessage = "Task id:%d is %s";
+var workerStringInterfaceMessage string = "Worker Id:%d, Total DONE TASK:%d";
+var taskRunStatusMessage = "Task id:%d task mem:%p is %s";
 
 /**
 Creates New worker with task, id and workerChannel
@@ -37,9 +37,9 @@ func (worker * Worker) StartWorking() {
 	if task != nil {
 		go func() {
 			logger.Debug(worker.String());
-			logger.Infof(taskRunStatusMessage,worker.Task.Id,"starting");
+			logger.Infof(taskRunStatusMessage,worker.Task.Id,task.executor,"starting");
 			worker.Task.executor.Job(task);
-			logger.Infof(taskRunStatusMessage,worker.Task.Id,"ended");
+			logger.Infof(taskRunStatusMessage,worker.Task.Id,task.executor,"ended");
 			worker.doneTaskCount++;
 			worker.Task = nil;
 			worker.workerChannel <- worker;
@@ -51,5 +51,5 @@ func (worker * Worker) StartWorking() {
 Returns current task pointer, Worker id and done Task Count values
  */
 func (worker * Worker) String() string  {
-	return fmt.Sprintf(workerStringInterfaceMessage,worker.Id,worker.Task.executor,worker.Task.Id,worker.doneTaskCount);
+	return fmt.Sprintf(workerStringInterfaceMessage,worker.Id,worker.doneTaskCount);
 }
