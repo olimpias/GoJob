@@ -43,7 +43,7 @@ Creates New Task pointer struct with given @{executor}. New struct will be assig
 func NewTask(executor Executor) *Task  {
 	counterMutex.Lock();
 	defer counterMutex.Unlock();
-	task := &Task{Id:IdCounter,executor:executor,cancelled:NewAtomicBool()};
+	task := &Task{Id:IdCounter,executor:executor};
 	IdCounter++;
 	logger.Infof(taskCreationInfoMessage,task.Id,executor);
 	return task;

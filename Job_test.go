@@ -95,7 +95,6 @@ func TestJobStart(t *testing.T)  {
 	task := NewTask(NewTestJobData(11));
 	job.NewTask(task);
 	job.Start();
-	task.Cancel();
 	if job.Start() {
 		t.Error("Workers should be running");
 	}
@@ -118,7 +117,7 @@ func TestJobStart(t *testing.T)  {
 		tmp = tmp.next;
 	}
 	job.WorkerQueue.mutex.RUnlock();
-	if doneTaskCount != 10 {
+	if doneTaskCount != 11 {
 		t.Error("All task Are not done!");
 	}
 	job.Stop();
