@@ -30,7 +30,8 @@ Id unifies tasks. Every task has unique @{Id}.
 type Task struct {
 	Id int
 	executor Executor;
-	cancelled AtomicBool;
+	cancelled bool;
+	cancelMutex sync.RWMutex;
 }
 
 var IdCounter = 0;
@@ -51,8 +52,10 @@ func NewTask(executor Executor) *Task  {
 /**
 Checks is task cancelled
  */
-func (task Task) IsCancelled() bool  {
-	return task.cancelled.getBoolValue();
+func (task * Task) IsCancelled() bool  {
+	task.cancelMutex.RLock();
+	defer task.cancelMutex.RUnlock();
+	return task.cancelled;
 }
 
 /**
@@ -60,5 +63,7 @@ Changes @{Cancelled} value to false. Cancelled will be used as argument in Job m
 Also it will effect queued task. When this method used, cancelled task will be bypassed.
  */
 func (task * Task) Cancel()   {
-	task.cancelled.setBoolValue(true);
+	task.cancelMutex.Lock();
+	defer  task.cancelMutex.Unlock();
+	task.cancelled = true;
 }
